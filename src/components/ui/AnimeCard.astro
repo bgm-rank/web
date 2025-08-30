@@ -82,7 +82,7 @@ const {
                     <div
                         class="font-bold text-base text-black dark:text-gray-100"
                     >
-                        {score.toFixed(4)}
+                        {score === null ? "N/A" : score.toFixed(4)}
                     </div>
                     <div class="text-gray-600 dark:text-gray-300 text-xs mb-1">
                         rank: {rank === 999999 ? "N/A" : rank}
