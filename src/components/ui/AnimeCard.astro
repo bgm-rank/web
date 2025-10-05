@@ -56,11 +56,11 @@ const {
             />
         </div>
         <div class="card-body flex flex-col flex-1 min-w-0">
-            <div class="card-head flex items-start justify-between gap-4">
+            <div class="card-head flex items-start gap-4">
                 <!-- 标题 -->
-                <div class="card-title flex-1 min-w-0">
+                <div class="card-title flex-1 min-w-0 pr-2 sm:pr-20">
                     <div
-                        class="font-bold text-base text-black dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
+                        class="font-bold text-base text-black dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 break-words"
                     >
                         <a
                             href={`https://bgm.tv/subject/${id}`}
@@ -70,14 +70,14 @@ const {
                         </a>
                     </div>
                     <div
-                        class="text-gray-600 dark:text-gray-300 text-xs mb-1 truncate"
+                        class="text-gray-600 dark:text-gray-300 text-xs mb-1 break-words"
                     >
                         {name}
                     </div>
                 </div>
                 <!-- 评分 -->
                 <div
-                    class="card-score ml-auto sm:ml-4 mt-1 sm:mt-0 md:ml-4 sm:text-right sm:shrink-0 sm:absolute sm:right-3 sm:top-3"
+                    class="card-score flex-shrink-0 w-16 sm:w-auto ml-auto sm:text-right sm:absolute sm:right-3 sm:top-3"
                 >
                     <div
                         class="font-bold text-base text-black dark:text-gray-100"
