@@ -33,16 +33,12 @@ const {
     data-collection={collection_total}
     data-comment={average_comment}
     data-drop={drop_rate}
+    style="counter-increment: anime-rank;"
 >
     <!-- 排名 -->
     <div
-        class="rank-badge top-0 left-0 w-8 h-8 flex items-center justify-center absolute"
+        class="rank-badge top-0 left-0 w-8 h-8 absolute"
     >
-        <div
-            class="w-full h-full flex items-center justify-center font-bold text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700"
-        >
-            {index + 1}
-        </div>
     </div>
 
     <div
@@ -170,5 +166,23 @@ const {
 <style>
     .rank-badge {
         clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+    }
+
+    .rank-badge::before {
+        content: counter(anime-rank);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.875rem;
+        color: rgb(55 65 81);
+        background-color: rgb(243 244 246);
+    }
+
+    :global(.dark) .rank-badge::before {
+        color: rgb(209 213 219);
+        background-color: rgb(55 65 81);
     }
 </style>
