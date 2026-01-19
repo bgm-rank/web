@@ -22,3 +22,11 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# AI coding assistants
+CLAUDE.md
+.cursor/
+.cursorrules
+.github/copilot-instructions.md
+.aider*
+.continue/
