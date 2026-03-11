@@ -1,22 +1,25 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import AnimeRank from "../components/sections/AnimeRank.astro";
+import { AvailableSeasonsSchema } from "../schemas/available-seasons";
 
 export async function getStaticPaths() {
-    const data = await fetch(
+    const raw: unknown = await fetch(
         "https://api.rinshankaiho.fun/api/v0/season/available",
     ).then((res) => res.json());
-    const available_seasons = data.available_seasons;
-    return available_seasons.map((season_id: string) => ({
-        params: { season_id: season_id },
+    const result = AvailableSeasonsSchema.safeParse(raw);
+    if (!result.success) {
+        throw new Error(`API /season/available validation failed: ${result.error.message}`);
+    }
+    return result.data.available_seasons.map((season_id: string) => ({
+        params: { season_id },
     }));
 }
 const { season_id } = Astro.params;
 
-function getSeasonName(seasonId: number) {
-    const season_id = String(seasonId);
-    const year = season_id.slice(2, 4);
-    const season = season_id.slice(4, 6);
+function getSeasonName(seasonId: string): string {
+    const year = seasonId.slice(0, 4);
+    const season = seasonId.slice(4, 6);
     return `${year}年${season}月`;
 }
 ---

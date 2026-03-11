@@ -1,12 +1,18 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import AnimeList from "../components/sections/AnimeList.astro";
+import { AvailableSeasonsSchema } from "../schemas/available-seasons";
 
-const response = await fetch(
+const raw: unknown = await fetch(
     "https://api.rinshankaiho.fun/api/v0/season/available",
 ).then((res) => res.json());
 
-const availableSeasonIdList = response.available_seasons;
+const result = AvailableSeasonsSchema.safeParse(raw);
+if (!result.success) {
+    throw new Error(`API /season/available validation failed: ${result.error.message}`);
+}
+
+const availableSeasonIdList = result.data.available_seasons;
 ---
 
 <BaseLayout currentSeasonId="">
