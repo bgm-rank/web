@@ -120,6 +120,9 @@ if (currentSeasonId) {
     </div>
 </header>
 
+<!-- Client script required: mobile menu toggle needs classList.toggle() to show/hide the drawer on click.
+     Pure CSS solutions (checkbox hack, :focus-within) require wrapping the entire header in a <label>,
+     which breaks landmark semantics and keyboard navigation — not acceptable for accessibility. -->
 <script>
     const menuToggle = document.getElementById("menu-toggle");
     const mobileMenu = document.getElementById("mobile-menu");
@@ -129,6 +132,9 @@ if (currentSeasonId) {
     });
 </script>
 
+<!-- Client script required (is:inline): theme must be applied synchronously before first paint by reading
+     localStorage and setting the "dark" class on <html>. SSG cannot know the user's stored preference
+     at build time, and a deferred script would cause a flash of the wrong theme on page load. -->
 <script is:inline>
     (() => {
         const key = "theme";
