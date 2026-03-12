@@ -77,7 +77,7 @@ _rerank(subjects);
         </label>
         <div class="flex flex-wrap items-center gap-2">
             <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1"
+                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
                 data-sort-key="rank"
             >
                 Rank
@@ -85,7 +85,7 @@ _rerank(subjects);
                 <Downarrow class="icon-desc hidden text-xs" />
             </button>
             <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1"
+                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
                 data-sort-key="score"
             >
                 评分
@@ -93,7 +93,7 @@ _rerank(subjects);
                 <Downarrow class="icon-desc hidden text-xs" />
             </button>
             <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1"
+                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
                 data-sort-key="collection"
             >
                 收藏
@@ -101,7 +101,7 @@ _rerank(subjects);
                 <Downarrow class="icon-desc hidden text-xs" />
             </button>
             <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1"
+                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
                 data-sort-key="comment"
             >
                 评论
@@ -109,7 +109,7 @@ _rerank(subjects);
                 <Downarrow class="icon-desc hidden text-xs" />
             </button>
             <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1"
+                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
                 data-sort-key="drop"
             >
                 抛弃率
@@ -118,7 +118,7 @@ _rerank(subjects);
             </button>
         </div>
     </div>
-    <div id="cards-list" class="space-y-2" style="counter-reset: anime-rank;">
+    <div id="cards-list" class="space-y-2">
         {
             subjects.map((item: any, index: number) => (
                 <AnimeCard
@@ -148,6 +148,12 @@ _rerank(subjects);
         <Clock class="text-xs" />
         <span>数据更新时间：{formatUpdatedAt(result.data.updated_at)}</span>
     </div>
+
+    <style>
+        #cards-list {
+            counter-reset: anime-rank;
+        }
+    </style>
 
     <script type="module" is:inline>
         const list = document.getElementById("cards-list");

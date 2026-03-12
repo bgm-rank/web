@@ -147,7 +147,7 @@ const groupedSeasons = availableSeasonIdList.reduce(
 <div class="max-w-4xl mx-auto px-1 sm:px-2 lg:px-3 py-1 sm:py-2 lg:py-3 pt-3 pb-3">
     {
         years.map((year: string) => (
-            <div class="bg-white dark:bg-[#3d3d3f] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 pt-3 pb-3 px-3 py-3 mb-3">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 pt-3 pb-3 px-3 py-3 mb-3">
                 <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-1 mt-0">
                     {year}
                 </h2>
@@ -156,7 +156,7 @@ const groupedSeasons = availableSeasonIdList.reduce(
                         (seasonId: string, index: number) => (
                             <a
                                 href={`/${seasonId}/`}
-                                class="group block rounded-lg overflow-hidden transition-all duration-200 no-underline"
+                                class="group block rounded-lg overflow-hidden transition-all duration-200 no-underline cursor-pointer transition-colors"
                             >
                                 <div class="w-full h-40 overflow-hidden">
                                     <img
