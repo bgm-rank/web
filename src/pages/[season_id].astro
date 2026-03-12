@@ -1,9 +1,10 @@
 ---
+import type { GetStaticPathsResult } from "astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import AnimeRank from "../components/sections/AnimeRank.astro";
 import { AvailableSeasonsSchema } from "../schemas/available-seasons";
 
-export async function getStaticPaths() {
+export async function getStaticPaths(): Promise<GetStaticPathsResult> {
     const raw: unknown = await fetch(
         "https://api.rinshankaiho.fun/api/v0/season/available",
     ).then((res) => res.json());
@@ -16,6 +17,7 @@ export async function getStaticPaths() {
     }));
 }
 const { season_id } = Astro.params;
+if (typeof season_id !== "string") throw new Error("Missing season_id param");
 
 function getSeasonName(seasonId: string): string {
     const year = seasonId.slice(0, 4);

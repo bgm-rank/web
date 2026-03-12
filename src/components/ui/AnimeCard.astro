@@ -6,6 +6,25 @@ import Fire from "../icons/Fire.astro";
 import Keep from "../icons/Keep.astro";
 import Trashbin from "../icons/Trashbin.astro";
 
+interface Props {
+    index: number;
+    id: number;
+    name: string;
+    name_cn: string;
+    images_large: string;
+    images_grid: string;
+    score: number | null;
+    rank: number;
+    collection_total: number;
+    average_comment: number;
+    drop_rate: number;
+    air_weekday: string | null;
+    meta_tags: string[];
+    collection_threshold: number;
+    comment_threshold: number;
+    drop_rate_threshold: number;
+}
+
 const {
     index,
     id,

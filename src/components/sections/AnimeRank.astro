@@ -3,7 +3,7 @@ import Downarrow from "../icons/Downarrow.astro";
 import Uparrow from "../icons/Uparrow.astro";
 import Clock from "../icons/Clock.astro";
 import AnimeCard from "../ui/AnimeCard.astro";
-import { SeasonDetailSchema } from "../../schemas/season-detail";
+import { SeasonDetailSchema, type Subject } from "../../schemas/season-detail";
 
 const { season_id } = Astro.props;
 
@@ -29,7 +29,7 @@ function formatUpdatedAt(updated_at: string) {
     });
 }
 
-function _collection_threshold(subjects: Array<Record<string, any>>) {
+function _collection_threshold(subjects: Subject[]): number {
     subjects.sort((a, b) => b.collection_total - a.collection_total);
     if (subjects.length < 4) {
         return 0;
@@ -37,7 +37,7 @@ function _collection_threshold(subjects: Array<Record<string, any>>) {
     return subjects[3].collection_total;
 }
 
-function _comment_threshold(subjects: Array<Record<string, any>>) {
+function _comment_threshold(subjects: Subject[]): number {
     subjects.sort((a, b) => b.average_comment - a.average_comment);
     if (subjects.length < 4) {
         return 0;
@@ -45,7 +45,7 @@ function _comment_threshold(subjects: Array<Record<string, any>>) {
     return subjects[3].average_comment;
 }
 
-function _drop_rate_threshold(subjects: Array<Record<string, any>>) {
+function _drop_rate_threshold(subjects: Subject[]): number {
     subjects.sort((a, b) => a.drop_rate - b.drop_rate);
     if (subjects.length < 4) {
         return 0;
@@ -53,7 +53,7 @@ function _drop_rate_threshold(subjects: Array<Record<string, any>>) {
     return subjects[3].drop_rate;
 }
 
-function _rerank(subjects: Array<Record<string, any>>) {
+function _rerank(subjects: Subject[]): void {
     subjects.sort((a, b) => a.rank - b.rank);
 }
 
@@ -120,7 +120,7 @@ _rerank(subjects);
     </div>
     <div id="cards-list" class="space-y-2">
         {
-            subjects.map((item: any, index: number) => (
+            subjects.map((item, index: number) => (
                 <AnimeCard
                     index={index}
                     id={item.id}
@@ -155,6 +155,9 @@ _rerank(subjects);
         }
     </style>
 
+    <!-- Client script required: sort order is a runtime user preference that cannot be pre-built statically.
+         Generating one page per sort key × order direction × season would produce O(N×10) pages and
+         require a full rebuild on every sort interaction — SSG is not a viable alternative. -->
     <script type="module" is:inline>
         const list = document.getElementById("cards-list");
         const cards = Array.from(list.children);
