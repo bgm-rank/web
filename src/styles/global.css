@@ -1,3 +1,14 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-bgm-base: oklch(22% 0.003 264);
+  /* 页面底色 */
+  --color-bgm-surface: oklch(25% 0.003 264);
+  /* 导航/页脚 */
+  --color-bgm-card: oklch(26% 0.004 264);
+  /* 卡片/容器 */
+  --color-bgm-border: oklch(32% 0.004 264);
+  /* 卡片边框 */
+}

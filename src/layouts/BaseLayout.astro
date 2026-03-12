@@ -19,7 +19,7 @@ const current_season_id = currentSeasonId || "";
 const available_season_id_list = result.data.available_seasons;
 ---
 
-<html lang="zh-CN" class="bg-gray-50 dark:bg-slate-950">
+<html lang="zh-CN" class="bg-gray-50 dark:bg-bgm-base">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="/favicon.ico" />
@@ -27,7 +27,7 @@ const available_season_id_list = result.data.available_seasons;
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle ? `${pageTitle} - Bangumi 新番排行榜` : "Bangumi 新番排行榜"}</title>
   </head>
-  <body class="bg-gray-50 dark:bg-slate-950">
+  <body class="bg-gray-50 dark:bg-bgm-base">
     <Header currentSeasonId={current_season_id} availableSeasonIdList={available_season_id_list} />
     <slot />
     <Footer />
