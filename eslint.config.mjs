@@ -12,7 +12,7 @@ export default [
   ...eslintPluginAstro.configs.recommended,
   // TypeScript files
   {
-    files: ["**/*.ts", "**/*.tsx", "**/*.astro"],
+    files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {

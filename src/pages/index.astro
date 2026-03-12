@@ -1,13 +1,13 @@
 ---
 import { AvailableSeasonsSchema } from "../schemas/available-seasons";
 
-const raw: unknown = await fetch(
-    "https://api.rinshankaiho.fun/api/v0/season/available",
-).then((res) => res.json());
+const raw: unknown = await fetch("https://api.rinshankaiho.fun/api/v0/season/available").then(
+  (res) => res.json(),
+);
 
 const result = AvailableSeasonsSchema.safeParse(raw);
 if (!result.success) {
-    throw new Error(`API /season/available validation failed: ${result.error.message}`);
+  throw new Error(`API /season/available validation failed: ${result.error.message}`);
 }
 
 return Astro.rewrite(`/${result.data.current_season_id}/`);

@@ -5,27 +5,27 @@ import AnimeRank from "../components/sections/AnimeRank.astro";
 import { AvailableSeasonsSchema } from "../schemas/available-seasons";
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-    const raw: unknown = await fetch(
-        "https://api.rinshankaiho.fun/api/v0/season/available",
-    ).then((res) => res.json());
-    const result = AvailableSeasonsSchema.safeParse(raw);
-    if (!result.success) {
-        throw new Error(`API /season/available validation failed: ${result.error.message}`);
-    }
-    return result.data.available_seasons.map((season_id: string) => ({
-        params: { season_id },
-    }));
+  const raw: unknown = await fetch("https://api.rinshankaiho.fun/api/v0/season/available").then(
+    (res) => res.json(),
+  );
+  const result = AvailableSeasonsSchema.safeParse(raw);
+  if (!result.success) {
+    throw new Error(`API /season/available validation failed: ${result.error.message}`);
+  }
+  return result.data.available_seasons.map((season_id: string) => ({
+    params: { season_id },
+  }));
 }
 const { season_id } = Astro.params;
 if (typeof season_id !== "string") throw new Error("Missing season_id param");
 
 function getSeasonName(seasonId: string): string {
-    const year = seasonId.slice(0, 4);
-    const season = seasonId.slice(4, 6);
-    return `${year}年${season}月`;
+  const year = seasonId.slice(0, 4);
+  const season = seasonId.slice(4, 6);
+  return `${year}年${season}月`;
 }
 ---
 
 <BaseLayout currentSeasonId={season_id} pageTitle={getSeasonName(season_id)}>
-    <AnimeRank season_id={season_id} />
+  <AnimeRank season_id={season_id} />
 </BaseLayout>

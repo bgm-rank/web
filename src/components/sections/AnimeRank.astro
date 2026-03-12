@@ -7,54 +7,54 @@ import { SeasonDetailSchema, type Subject } from "../../schemas/season-detail";
 
 const { season_id } = Astro.props;
 
-const raw: unknown = await fetch(
-    `https://api.rinshankaiho.fun/api/v0/season/${season_id}`,
-).then((res) => res.json());
+const raw: unknown = await fetch(`https://api.rinshankaiho.fun/api/v0/season/${season_id}`).then(
+  (res) => res.json(),
+);
 
 const result = SeasonDetailSchema.safeParse(raw);
 if (!result.success) {
-    throw new Error(`API /season/${season_id} validation failed: ${result.error.message}`);
+  throw new Error(`API /season/${season_id} validation failed: ${result.error.message}`);
 }
 
 const subjects = result.data.subjects;
 
 function formatUpdatedAt(updated_at: string) {
-    const date = new Date(updated_at);
-    return date.toLocaleDateString("zh-CN", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+  const date = new Date(updated_at);
+  return date.toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function _collection_threshold(subjects: Subject[]): number {
-    subjects.sort((a, b) => b.collection_total - a.collection_total);
-    if (subjects.length < 4) {
-        return 0;
-    }
-    return subjects[3].collection_total;
+  subjects.sort((a, b) => b.collection_total - a.collection_total);
+  if (subjects.length < 4) {
+    return 0;
+  }
+  return subjects[3].collection_total;
 }
 
 function _comment_threshold(subjects: Subject[]): number {
-    subjects.sort((a, b) => b.average_comment - a.average_comment);
-    if (subjects.length < 4) {
-        return 0;
-    }
-    return subjects[3].average_comment;
+  subjects.sort((a, b) => b.average_comment - a.average_comment);
+  if (subjects.length < 4) {
+    return 0;
+  }
+  return subjects[3].average_comment;
 }
 
 function _drop_rate_threshold(subjects: Subject[]): number {
-    subjects.sort((a, b) => a.drop_rate - b.drop_rate);
-    if (subjects.length < 4) {
-        return 0;
-    }
-    return subjects[3].drop_rate;
+  subjects.sort((a, b) => a.drop_rate - b.drop_rate);
+  if (subjects.length < 4) {
+    return 0;
+  }
+  return subjects[3].drop_rate;
 }
 
 function _rerank(subjects: Subject[]): void {
-    subjects.sort((a, b) => a.rank - b.rank);
+  subjects.sort((a, b) => a.rank - b.rank);
 }
 
 const collection_threshold = _collection_threshold(subjects);
@@ -64,186 +64,170 @@ _rerank(subjects);
 ---
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div
-        class="anime-rank-header mobile:flex-col sm:flex-wrap sm:flex items-center gap-2 mb-4 dark:text-gray-300 justify-end"
-    >
-        <label class="flex items-center gap-1 text-sm pb-2 sm:pb-0">
-            <input
-                id="unrankedDisplayToggle"
-                type="checkbox"
-                class="accent-blue-600"
-            />
-            <span>显示没有排名的作品</span>
-        </label>
-        <div class="flex flex-wrap items-center gap-2">
-            <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
-                data-sort-key="rank"
-            >
-                Rank
-                <Uparrow class="icon-asc hidden text-xs" />
-                <Downarrow class="icon-desc hidden text-xs" />
-            </button>
-            <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
-                data-sort-key="score"
-            >
-                评分
-                <Uparrow class="icon-asc hidden text-xs" />
-                <Downarrow class="icon-desc hidden text-xs" />
-            </button>
-            <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
-                data-sort-key="collection"
-            >
-                收藏
-                <Uparrow class="icon-asc hidden text-xs" />
-                <Downarrow class="icon-desc hidden text-xs" />
-            </button>
-            <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
-                data-sort-key="comment"
-            >
-                评论
-                <Uparrow class="icon-asc hidden text-xs" />
-                <Downarrow class="icon-desc hidden text-xs" />
-            </button>
-            <button
-                class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
-                data-sort-key="drop"
-            >
-                抛弃率
-                <Uparrow class="icon-asc hidden text-xs" />
-                <Downarrow class="icon-desc hidden text-xs" />
-            </button>
-        </div>
+  <div
+    class="anime-rank-header mobile:flex-col sm:flex-wrap sm:flex items-center gap-2 mb-4 dark:text-gray-300 justify-end"
+  >
+    <label class="flex items-center gap-1 text-sm pb-2 sm:pb-0">
+      <input id="unrankedDisplayToggle" type="checkbox" class="accent-blue-600" />
+      <span>显示没有排名的作品</span>
+    </label>
+    <div class="flex flex-wrap items-center gap-2">
+      <button
+        class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
+        data-sort-key="rank"
+      >
+        Rank
+        <Uparrow class="icon-asc hidden text-xs" />
+        <Downarrow class="icon-desc hidden text-xs" />
+      </button>
+      <button
+        class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
+        data-sort-key="score"
+      >
+        评分
+        <Uparrow class="icon-asc hidden text-xs" />
+        <Downarrow class="icon-desc hidden text-xs" />
+      </button>
+      <button
+        class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
+        data-sort-key="collection"
+      >
+        收藏
+        <Uparrow class="icon-asc hidden text-xs" />
+        <Downarrow class="icon-desc hidden text-xs" />
+      </button>
+      <button
+        class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
+        data-sort-key="comment"
+      >
+        评论
+        <Uparrow class="icon-asc hidden text-xs" />
+        <Downarrow class="icon-desc hidden text-xs" />
+      </button>
+      <button
+        class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
+        data-sort-key="drop"
+      >
+        抛弃率
+        <Uparrow class="icon-asc hidden text-xs" />
+        <Downarrow class="icon-desc hidden text-xs" />
+      </button>
     </div>
-    <div id="cards-list" class="space-y-2">
-        {
-            subjects.map((item, index: number) => (
-                <AnimeCard
-                    index={index}
-                    id={item.id}
-                    name={item.name}
-                    name_cn={item.name_cn}
-                    images_large={item.images_large}
-                    images_grid={item.images_grid}
-                    score={item.score}
-                    rank={item.rank}
-                    collection_total={item.collection_total}
-                    average_comment={item.average_comment}
-                    drop_rate={item.drop_rate}
-                    air_weekday={item.air_weekday}
-                    meta_tags={item.meta_tags}
-                    collection_threshold={collection_threshold}
-                    comment_threshold={comment_threshold}
-                    drop_rate_threshold={drop_rate_threshold}
-                />
-            ))
-        }
-    </div>
-    <div
-        class="text-gray-600 dark:text-gray-400 text-xs mt-4 mb-1 flex items-center justify-center gap-1"
-    >
-        <Clock class="text-xs" />
-        <span>数据更新时间：{formatUpdatedAt(result.data.updated_at)}</span>
-    </div>
+  </div>
+  <div id="cards-list" class="space-y-2">
+    {
+      subjects.map((item, index: number) => (
+        <AnimeCard
+          index={index}
+          id={item.id}
+          name={item.name}
+          name_cn={item.name_cn}
+          images_large={item.images_large}
+          images_grid={item.images_grid}
+          score={item.score}
+          rank={item.rank}
+          collection_total={item.collection_total}
+          average_comment={item.average_comment}
+          drop_rate={item.drop_rate}
+          air_weekday={item.air_weekday}
+          meta_tags={item.meta_tags}
+          collection_threshold={collection_threshold}
+          comment_threshold={comment_threshold}
+          drop_rate_threshold={drop_rate_threshold}
+        />
+      ))
+    }
+  </div>
+  <div
+    class="text-gray-600 dark:text-gray-400 text-xs mt-4 mb-1 flex items-center justify-center gap-1"
+  >
+    <Clock class="text-xs" />
+    <span>数据更新时间：{formatUpdatedAt(result.data.updated_at)}</span>
+  </div>
 
-    <style>
-        #cards-list {
-            counter-reset: anime-rank;
-        }
-    </style>
+  <style>
+    #cards-list {
+      counter-reset: anime-rank;
+    }
+  </style>
 
-    <!-- Client script required: sort order is a runtime user preference that cannot be pre-built statically.
+  <!-- Client script required: sort order is a runtime user preference that cannot be pre-built statically.
          Generating one page per sort key × order direction × season would produce O(N×10) pages and
          require a full rebuild on every sort interaction — SSG is not a viable alternative. -->
-    <script type="module" is:inline>
-        const list = document.getElementById("cards-list");
-        const cards = Array.from(list.children);
+  <script type="module" is:inline>
+    const list = document.getElementById("cards-list");
+    const cards = Array.from(list.children);
 
-        const unrankedDisplayToggle = document.getElementById(
-            "unrankedDisplayToggle",
-        );
-        const headerButtons = document.querySelectorAll("[data-sort-key]");
+    const unrankedDisplayToggle = document.getElementById("unrankedDisplayToggle");
+    const headerButtons = document.querySelectorAll("[data-sort-key]");
 
-        const params = new URLSearchParams(location.search);
-        let sortKey = params.get("sort") || "rank";
-        let order = params.get("order") || "asc";
-        let unrankedDisplay = params.get("unrankedDisplay") === "1";
+    const params = new URLSearchParams(location.search);
+    let sortKey = params.get("sort") || "rank";
+    let order = params.get("order") || "asc";
+    let unrankedDisplay = params.get("unrankedDisplay") === "1";
 
-        function sortFn(a, b) {
-            const aVal = Number(a.dataset[sortKey]);
-            const bVal = Number(b.dataset[sortKey]);
-            const valA = isNaN(aVal) ? Infinity : aVal;
-            const valB = isNaN(bVal) ? Infinity : bVal;
-            return order === "asc" ? valA - valB : valB - valA;
+    function sortFn(a, b) {
+      const aVal = Number(a.dataset[sortKey]);
+      const bVal = Number(b.dataset[sortKey]);
+      const valA = isNaN(aVal) ? Infinity : aVal;
+      const valB = isNaN(bVal) ? Infinity : bVal;
+      return order === "asc" ? valA - valB : valB - valA;
+    }
+
+    function apply() {
+      const filtered = unrankedDisplay
+        ? cards.slice()
+        : cards.filter((c) => {
+            const r = Number(c.dataset.rank);
+            return !Number.isNaN(r) && r < 999999 && r > 0;
+          });
+      filtered.sort(sortFn);
+      list.innerHTML = "";
+      filtered.forEach((el) => list.appendChild(el));
+
+      unrankedDisplayToggle.checked = unrankedDisplay;
+      headerButtons.forEach((btn) => {
+        const active = btn.dataset.sortKey === sortKey;
+        btn.classList.toggle("bg-gray-200", active);
+        btn.classList.toggle("dark:bg-gray-600", active);
+        const ascIcon = btn.querySelector(".icon-asc");
+        const descIcon = btn.querySelector(".icon-desc");
+        if (ascIcon && descIcon) {
+          ascIcon.classList.toggle("hidden", !(active && order === "asc"));
+          descIcon.classList.toggle("hidden", !(active && order === "desc"));
         }
+      });
 
-        function apply() {
-            const filtered = unrankedDisplay
-                ? cards.slice()
-                : cards.filter((c) => {
-                      const r = Number(c.dataset.rank);
-                      return !Number.isNaN(r) && r < 999999 && r > 0;
-                  });
-            filtered.sort(sortFn);
-            list.innerHTML = "";
-            filtered.forEach((el) => list.appendChild(el));
+      const newParams = new URLSearchParams();
+      if (sortKey !== "rank") newParams.set("sort", sortKey);
+      if (order !== "asc") newParams.set("order", order);
+      if (unrankedDisplay) newParams.set("unrankedDisplay", "1");
+      const search = newParams.toString();
+      history.replaceState(null, "", search ? `?${search}` : location.pathname);
+    }
 
-            unrankedDisplayToggle.checked = unrankedDisplay;
-            headerButtons.forEach((btn) => {
-                const active = btn.dataset.sortKey === sortKey;
-                btn.classList.toggle("bg-gray-200", active);
-                btn.classList.toggle("dark:bg-gray-600", active);
-                const ascIcon = btn.querySelector(".icon-asc");
-                const descIcon = btn.querySelector(".icon-desc");
-                if (ascIcon && descIcon) {
-                    ascIcon.classList.toggle(
-                        "hidden",
-                        !(active && order === "asc"),
-                    );
-                    descIcon.classList.toggle(
-                        "hidden",
-                        !(active && order === "desc"),
-                    );
-                }
-            });
+    unrankedDisplayToggle.addEventListener("change", (e) => {
+      unrankedDisplay = e.target.checked;
+      apply();
+    });
 
-            const newParams = new URLSearchParams();
-            if (sortKey !== "rank") newParams.set("sort", sortKey);
-            if (order !== "asc") newParams.set("order", order);
-            if (unrankedDisplay) newParams.set("unrankedDisplay", "1");
-            const search = newParams.toString();
-            history.replaceState(
-                null,
-                "",
-                search ? `?${search}` : location.pathname,
-            );
+    headerButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.dataset.sortKey;
+        if (key === sortKey) {
+          order = order === "asc" ? "desc" : "asc";
+        } else {
+          sortKey = key;
+          if (key === "rank" || key === "drop") {
+            order = "asc";
+          } else {
+            order = "desc";
+          }
         }
-
-        unrankedDisplayToggle.addEventListener("change", (e) => {
-            unrankedDisplay = e.target.checked;
-            apply();
-        });
-
-        headerButtons.forEach((btn) => {
-            btn.addEventListener("click", () => {
-                const key = btn.dataset.sortKey;
-                if (key === sortKey) {
-                    order = order === "asc" ? "desc" : "asc";
-                } else {
-                    sortKey = key;
-                    if (key === "rank" || key === "drop") {
-                        order = "asc";
-                    } else {
-                        order = "desc";
-                    }
-                }
-                apply();
-            });
-        });
-
         apply();
-    </script>
+      });
+    });
+
+    apply();
+  </script>
 </div>

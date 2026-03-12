@@ -4,36 +4,32 @@ import Footer from "../components/sections/Footer.astro";
 import "../styles/global.css";
 import { AvailableSeasonsSchema } from "../schemas/available-seasons";
 
-const raw: unknown = await fetch(
-    "https://api.rinshankaiho.fun/api/v0/season/available",
-).then((res) => res.json());
+const raw: unknown = await fetch("https://api.rinshankaiho.fun/api/v0/season/available").then(
+  (res) => res.json(),
+);
 
 const result = AvailableSeasonsSchema.safeParse(raw);
 if (!result.success) {
-    throw new Error(`API /season/available validation failed: ${result.error.message}`);
+  throw new Error(`API /season/available validation failed: ${result.error.message}`);
 }
 
 const { pageTitle, currentSeasonId } = Astro.props;
 
 const current_season_id = currentSeasonId || "";
 const available_season_id_list = result.data.available_seasons;
-
 ---
 
 <html lang="zh-CN" class="bg-gray-50 dark:bg-slate-950">
-    <head>
-        <meta charset="utf-8" />
-        <link rel="icon" href="/favicon.ico" />
-        <meta name="viewport" content="width=device-width" />
-        <meta name="generator" content={Astro.generator} />
-        <title>{pageTitle ? `${pageTitle} - Bangumi 新番排行榜`: "Bangumi 新番排行榜"}</title>
-    </head>
-    <body class="bg-gray-50 dark:bg-slate-950">
-        <Header
-            currentSeasonId={current_season_id}
-            availableSeasonIdList={available_season_id_list}
-        />
-        <slot />
-        <Footer />
-    </body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle ? `${pageTitle} - Bangumi 新番排行榜` : "Bangumi 新番排行榜"}</title>
+  </head>
+  <body class="bg-gray-50 dark:bg-slate-950">
+    <Header currentSeasonId={current_season_id} availableSeasonIdList={available_season_id_list} />
+    <slot />
+    <Footer />
+  </body>
 </html>

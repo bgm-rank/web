@@ -1,9 +1,9 @@
 ---
 function getSeasonName(seasonId: string) {
-    const season_id = String(seasonId);
-    const year = season_id.slice(0, 4); // 四位年份
-    const season = season_id.slice(4, 6);
-    return `${year}年${season}月`;
+  const season_id = String(seasonId);
+  const year = season_id.slice(0, 4); // 四位年份
+  const season = season_id.slice(4, 6);
+  return `${year}年${season}月`;
 }
 
 const seasonImages: Record<string, string> = {
@@ -111,61 +111,55 @@ const seasonImages: Record<string, string> = {
   "200010": "https://lain.bgm.tv/pic/cover/l/4c/fb/10419_9Z98T.jpg",
   "200007": "https://lain.bgm.tv/pic/cover/l/ca/75/10420_83X2X.jpg",
   "200004": "https://lain.bgm.tv/pic/cover/l/72/98/6390_Dr5S5.jpg",
-  "200001": "https://lain.bgm.tv/pic/cover/l/94/bd/14876_95Rgc.jpg"
+  "200001": "https://lain.bgm.tv/pic/cover/l/94/bd/14876_95Rgc.jpg",
 };
 
 const { availableSeasonIdList } = Astro.props;
 
 const years: string[] = Array.from(
-    new Set<string>(
-        availableSeasonIdList.map((seasonId: string) => String(seasonId).slice(0, 4)),
-    ),
+  new Set<string>(availableSeasonIdList.map((seasonId: string) => String(seasonId).slice(0, 4))),
 );
 
 const groupedSeasons = availableSeasonIdList.reduce(
-    (acc: Record<string, string[]>, seasonId: string) => {
-        const year = String(seasonId).slice(0, 4);
-        if (!acc[year]) {
-            acc[year] = [];
-        }
-        acc[year].push(seasonId);
-        return acc;
-    },
-    {},
+  (acc: Record<string, string[]>, seasonId: string) => {
+    const year = String(seasonId).slice(0, 4);
+    if (!acc[year]) {
+      acc[year] = [];
+    }
+    acc[year].push(seasonId);
+    return acc;
+  },
+  {},
 );
 ---
 
 <div class="max-w-4xl mx-auto px-1 sm:px-2 lg:px-3 py-1 sm:py-2 lg:py-3 pt-3 pb-3">
-    {
-        years.map((year: string) => (
-            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 pt-3 pb-3 px-3 py-3 mb-3">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-1 mt-0">
-                    {year}
-                </h2>
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                    {groupedSeasons[year].map(
-                        (seasonId: string, index: number) => (
-                            <a
-                                href={`/${seasonId}/`}
-                                class="group block rounded-lg overflow-hidden transition-all duration-200 no-underline cursor-pointer transition-colors"
-                            >
-                                <div class="w-full h-40 overflow-hidden">
-                                    <img
-                                        src={seasonImages[seasonId]}
-                                        alt={getSeasonName(seasonId)}
-                                        class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
-                                    />
-                                </div>
-                                <div class="p-1">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        {getSeasonName(seasonId)}
-                                    </div>
-                                </div>
-                            </a>
-                        ),
-                    )}
+  {
+    years.map((year: string) => (
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 pt-3 pb-3 px-3 py-3 mb-3">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-1 mt-0">{year}</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          {groupedSeasons[year].map((seasonId: string, index: number) => (
+            <a
+              href={`/${seasonId}/`}
+              class="group block rounded-lg overflow-hidden transition-all duration-200 no-underline cursor-pointer transition-colors"
+            >
+              <div class="w-full h-40 overflow-hidden">
+                <img
+                  src={seasonImages[seasonId]}
+                  alt={getSeasonName(seasonId)}
+                  class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
+                />
+              </div>
+              <div class="p-1">
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {getSeasonName(seasonId)}
                 </div>
-            </div>
-        ))
-    }
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))
+  }
 </div>
