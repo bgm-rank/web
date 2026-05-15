@@ -5,7 +5,8 @@ import AnimeRank from "../components/sections/AnimeRank.astro";
 import { AvailableSeasonsSchema } from "../schemas/available-seasons";
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-  const raw: unknown = await fetch("https://api.rinshankaiho.fun/api/v0/season/available").then(
+  const API_BASE = import.meta.env.API_BASE ?? "https://api.rinshankaiho.fun/api/v0";
+  const raw: unknown = await fetch(`${API_BASE}/season/available`).then(
     (res) => res.json(),
   );
   const result = AvailableSeasonsSchema.safeParse(raw);
