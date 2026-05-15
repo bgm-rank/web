@@ -1,8 +1,14 @@
 import { z } from "zod";
 
-export const AvailableSeasonsSchema = z.object({
-  current_season_id: z.coerce.string().min(1),
-  available_seasons: z.array(z.coerce.string()).min(1),
+export const SeasonSchema = z.object({
+  season_id: z.number(),
+  year: z.number(),
+  season: z.enum(["WINTER", "SPRING", "SUMMER", "FALL"]),
+  name: z.string().nullable(),
+  updated_at: z.string(),
 });
 
-export type AvailableSeasons = z.infer<typeof AvailableSeasonsSchema>;
+export type Season = z.infer<typeof SeasonSchema>;
+
+export const SeasonsSchema = z.array(SeasonSchema).min(1);
+export type Seasons = z.infer<typeof SeasonsSchema>;

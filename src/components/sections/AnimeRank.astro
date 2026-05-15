@@ -3,21 +3,21 @@ import Downarrow from "../icons/Downarrow.astro";
 import Uparrow from "../icons/Uparrow.astro";
 import Clock from "../icons/Clock.astro";
 import AnimeCard from "../ui/AnimeCard.astro";
-import { SeasonDetailSchema, type Subject } from "../../schemas/season-detail";
+import { SubjectsSchema, type Subject } from "../../schemas/season-detail";
 
-const { season_id } = Astro.props;
+const { season_id, updated_at } = Astro.props;
 
-const API_BASE = import.meta.env.API_BASE ?? "https://api.rinshankaiho.fun/api/v0";
-const raw: unknown = await fetch(`${API_BASE}/season/${season_id}`).then(
+const API_BASE = import.meta.env.API_BASE ?? "https://api.rinshankaiho.fun";
+const raw: unknown = await fetch(`${API_BASE}/api/seasons/${season_id}/subjects`).then(
   (res) => res.json(),
 );
 
-const result = SeasonDetailSchema.safeParse(raw);
+const result = SubjectsSchema.safeParse(raw);
 if (!result.success) {
-  throw new Error(`API /season/${season_id} validation failed: ${result.error.message}`);
+  throw new Error(`API /api/seasons/${season_id}/subjects validation failed: ${result.error.message}`);
 }
 
-const subjects = result.data.subjects;
+const subjects = result.data;
 
 function formatUpdatedAt(updated_at: string) {
   const date = new Date(updated_at);
@@ -31,27 +31,33 @@ function formatUpdatedAt(updated_at: string) {
 }
 
 function _collection_threshold(subjects: Subject[]): number {
-  subjects.sort((a, b) => b.collection_total - a.collection_total);
-  if (subjects.length < 4) {
+  const sorted = subjects
+    .filter((s) => s.collection_total !== null)
+    .sort((a, b) => (b.collection_total ?? 0) - (a.collection_total ?? 0));
+  if (sorted.length < 4) {
     return 0;
   }
-  return subjects[3].collection_total;
+  return sorted[3].collection_total ?? 0;
 }
 
 function _comment_threshold(subjects: Subject[]): number {
-  subjects.sort((a, b) => b.average_comment - a.average_comment);
-  if (subjects.length < 4) {
+  const sorted = subjects
+    .filter((s) => s.average_comment !== null)
+    .sort((a, b) => (b.average_comment ?? 0) - (a.average_comment ?? 0));
+  if (sorted.length < 4) {
     return 0;
   }
-  return subjects[3].average_comment;
+  return sorted[3].average_comment ?? 0;
 }
 
 function _drop_rate_threshold(subjects: Subject[]): number {
-  subjects.sort((a, b) => a.drop_rate - b.drop_rate);
-  if (subjects.length < 4) {
+  const sorted = subjects
+    .filter((s) => s.drop_rate !== null)
+    .sort((a, b) => (a.drop_rate ?? 1) - (b.drop_rate ?? 1));
+  if (sorted.length < 4) {
     return 0;
   }
-  return subjects[3].drop_rate;
+  return sorted[3].drop_rate ?? 0;
 }
 
 function _rerank(subjects: Subject[]): void {
@@ -143,7 +149,7 @@ _rerank(subjects);
     class="text-gray-600 dark:text-gray-400 text-xs mt-4 mb-1 flex items-center justify-center gap-1"
   >
     <Clock class="text-xs" />
-    <span>数据更新时间：{formatUpdatedAt(result.data.updated_at)}</span>
+    <span>数据更新时间：{formatUpdatedAt(updated_at)}</span>
   </div>
 
   <style>

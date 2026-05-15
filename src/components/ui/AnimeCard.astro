@@ -9,15 +9,15 @@ import Trashbin from "../icons/Trashbin.astro";
 interface Props {
   index: number;
   id: number;
-  name: string;
-  name_cn: string;
-  images_large: string;
-  images_grid: string;
+  name: string | null;
+  name_cn: string | null;
+  images_large: string | null;
+  images_grid: string | null;
   score: number | null;
   rank: number;
-  collection_total: number;
-  average_comment: number;
-  drop_rate: number;
+  collection_total: number | null;
+  average_comment: number | null;
+  drop_rate: number | null;
   air_weekday: string | null;
   meta_tags: string[];
   collection_threshold: number;
@@ -61,7 +61,7 @@ const {
   >
     <!-- 动画海报 -->
     <div class="card-image flex-shrink-0 mr-3 sm:mr-4">
-      <img class="w-14 sm:w-16 h-20 sm:h-24 object-cover rounded" src={images_grid} />
+      <img class="w-14 sm:w-16 h-20 sm:h-24 object-cover rounded" src={images_grid ?? ""} />
     </div>
     <div class="card-body flex flex-col flex-1 min-w-0">
       <div class="card-head flex items-start gap-4">
@@ -71,7 +71,7 @@ const {
             class="font-bold text-base text-black dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 break-words"
           >
             <a href={`https://bgm.tv/subject/${id}`} target="_blank">
-              {name_cn || name}
+              {name_cn || name || "(无标题)"}
             </a>
           </div>
           <div class="text-gray-600 dark:text-gray-300 text-xs mb-1 break-words">
@@ -114,16 +114,16 @@ const {
           class="hidden sm:flex mt-2 gap-4 text-xs text-gray-600 dark:text-gray-400 items-center"
         >
           <div class="flex flex-wrap gap-1 inline-flex items-center">
-            {collection_total > collection_threshold ? <Star /> : <Bookmark />}
-            <span>收藏: {collection_total}</span>
+            {(collection_total ?? 0) > collection_threshold ? <Star /> : <Bookmark />}
+            <span>收藏: {collection_total ?? "N/A"}</span>
           </div>
           <div class="flex flex-wrap gap-1 inline-flex items-center">
-            {average_comment > comment_threshold ? <Fire /> : <Chat />}
-            <span>话均评论: {average_comment.toFixed(1)}</span>
+            {(average_comment ?? 0) > comment_threshold ? <Fire /> : <Chat />}
+            <span>话均评论: {average_comment !== null ? average_comment.toFixed(1) : "N/A"}</span>
           </div>
           <div class="flex flex-wrap gap-1 inline-flex items-center">
-            {drop_rate < drop_rate_threshold ? <Keep /> : <Trashbin />}
-            <span>抛弃率: {(drop_rate * 100).toFixed(2)}%</span>
+            {(drop_rate ?? 1) < drop_rate_threshold ? <Keep /> : <Trashbin />}
+            <span>抛弃率: {drop_rate !== null ? (drop_rate * 100).toFixed(2) + "%" : "N/A"}</span>
           </div>
         </div>
       </div>
@@ -132,16 +132,16 @@ const {
   <!-- 收藏数: 移动端 -->
   <div class="sm:hidden mt-2 flex gap-4 text-xs text-gray-600 dark:text-gray-400 items-center">
     <div class="flex flex-wrap gap-1 inline-flex items-center">
-      {collection_total > collection_threshold ? <Star /> : <Bookmark />}
-      <span>收藏: {collection_total}</span>
+      {(collection_total ?? 0) > collection_threshold ? <Star /> : <Bookmark />}
+      <span>收藏: {collection_total ?? "N/A"}</span>
     </div>
     <div class="flex flex-wrap gap-1 inline-flex items-center">
-      {average_comment > comment_threshold ? <Fire /> : <Chat />}
-      <span>话均评论: {average_comment.toFixed(1)}</span>
+      {(average_comment ?? 0) > comment_threshold ? <Fire /> : <Chat />}
+      <span>话均评论: {average_comment !== null ? average_comment.toFixed(1) : "N/A"}</span>
     </div>
     <div class="flex flex-wrap gap-1 inline-flex items-center">
-      {drop_rate < drop_rate_threshold ? <Keep /> : <Trashbin />}
-      <span>抛弃率: {(drop_rate * 100).toFixed(2)}%</span>
+      {(drop_rate ?? 1) < drop_rate_threshold ? <Keep /> : <Trashbin />}
+      <span>抛弃率: {drop_rate !== null ? (drop_rate * 100).toFixed(2) + "%" : "N/A"}</span>
     </div>
   </div>
 </div>
