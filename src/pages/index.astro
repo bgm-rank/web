@@ -1,11 +1,20 @@
 ---
-import { SeasonsSchema } from "../schemas/available-seasons";
+import { SeasonSchema, SeasonsSchema } from "../schemas/available-seasons";
 
 const API_BASE = import.meta.env.API_BASE ?? "https://api.rinshankaiho.fun";
+
+const currentRes = await fetch(`${API_BASE}/api/seasons/current`);
+if (currentRes.ok) {
+  const currentRaw: unknown = await currentRes.json();
+  const currentResult = SeasonSchema.safeParse(currentRaw);
+  if (currentResult.success) {
+    return Astro.rewrite(`/${String(currentResult.data.season_id)}/`);
+  }
+}
+
 const raw: unknown = await fetch(`${API_BASE}/api/seasons`).then(
   (res) => res.json(),
 );
-
 const result = SeasonsSchema.safeParse(raw);
 if (!result.success) {
   throw new Error(`API /api/seasons validation failed: ${result.error.message}`);

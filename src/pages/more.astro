@@ -2,20 +2,33 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import AnimeList from "../components/sections/AnimeList.astro";
 import { SeasonsSchema } from "../schemas/available-seasons";
+import { SeasonsTop1Schema } from "../schemas/season-top1";
 
 const API_BASE = import.meta.env.API_BASE ?? "https://api.rinshankaiho.fun";
-const raw: unknown = await fetch(`${API_BASE}/api/seasons`).then(
-  (res) => res.json(),
-);
 
-const result = SeasonsSchema.safeParse(raw);
-if (!result.success) {
-  throw new Error(`API /api/seasons validation failed: ${result.error.message}`);
+const [seasonsRaw, top1Raw]: [unknown, unknown] = await Promise.all([
+  fetch(`${API_BASE}/api/seasons`).then((res) => res.json()),
+  fetch(`${API_BASE}/api/seasons/top1`).then((res) => res.json()),
+]);
+
+const seasonsResult = SeasonsSchema.safeParse(seasonsRaw);
+if (!seasonsResult.success) {
+  throw new Error(`API /api/seasons validation failed: ${seasonsResult.error.message}`);
 }
 
-const availableSeasonIdList = result.data.map((s) => String(s.season_id));
+const top1Result = SeasonsTop1Schema.safeParse(top1Raw);
+if (!top1Result.success) {
+  throw new Error(`API /api/seasons/top1 validation failed: ${top1Result.error.message}`);
+}
+
+const availableSeasonIdList = seasonsResult.data.map((s) => String(s.season_id));
+
+const seasonCoverMap: Record<string, string> = {};
+for (const item of top1Result.data) {
+  seasonCoverMap[String(item.season_id)] = item.subject.images_large ?? "";
+}
 ---
 
 <BaseLayout currentSeasonId="">
-  <AnimeList availableSeasonIdList={availableSeasonIdList} />
+  <AnimeList availableSeasonIdList={availableSeasonIdList} seasonCoverMap={seasonCoverMap} />
 </BaseLayout>
