@@ -7,7 +7,7 @@ export const SubjectSchema = z.object({
   images_large: z.string().nullable(),
   images_grid: z.string().nullable(),
   score: z.number().nullable(),
-  rank: z.number().int().min(1),
+  rank: z.number().int().min(1).nullable(),
   collection_total: z.number().nullable(),
   average_comment: z.number().nullable(),
   drop_rate: z.number().min(0).max(1).nullable(),

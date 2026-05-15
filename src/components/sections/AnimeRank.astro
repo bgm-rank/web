@@ -17,7 +17,8 @@ if (!result.success) {
   throw new Error(`API /api/seasons/${season_id}/subjects validation failed: ${result.error.message}`);
 }
 
-const subjects = result.data;
+const failedCount = result.data.filter((s) => s.rank === null).length;
+const subjects = result.data.filter((s) => s.rank !== null) as (typeof result.data[number] & { rank: number })[];
 
 function formatUpdatedAt(updated_at: string) {
   const date = new Date(updated_at);
@@ -61,7 +62,7 @@ function _drop_rate_threshold(subjects: Subject[]): number {
 }
 
 function _rerank(subjects: Subject[]): void {
-  subjects.sort((a, b) => a.rank - b.rank);
+  subjects.sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0));
 }
 
 const collection_threshold = _collection_threshold(subjects);
@@ -183,6 +184,13 @@ _rerank(subjects);
     <Clock class="text-xs" />
     <span>数据更新时间：{formatUpdatedAt(updated_at)}</span>
   </div>
+  {
+    failedCount > 0 && (
+      <div class="text-xs mt-2 mb-1 flex items-center justify-center gap-1 text-yellow-600 dark:text-yellow-400">
+        <span>⚠ {failedCount} 部番组数据更新失败，已从列表中隐藏</span>
+      </div>
+    )
+  }
 
   <style>
     #cards-list {
