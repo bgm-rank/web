@@ -20,6 +20,8 @@ interface Props {
   drop_rate: number | null;
   air_weekday: string | null;
   meta_tags: string[];
+  media_type: string | null;
+  rating: string | null;
   collection_threshold: number;
   comment_threshold: number;
   drop_rate_threshold: number;
@@ -39,6 +41,8 @@ const {
   drop_rate,
   air_weekday,
   meta_tags,
+  media_type,
+  rating,
   collection_threshold,
   comment_threshold,
   drop_rate_threshold,
@@ -52,6 +56,8 @@ const {
   data-collection={collection_total}
   data-comment={average_comment}
   data-drop={drop_rate}
+  data-media-type={media_type ?? ""}
+  data-rating={rating ?? ""}
 >
   <!-- 排名 -->
   <div class="rank-badge top-0 left-0 w-8 h-8 absolute"></div>

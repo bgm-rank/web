@@ -71,13 +71,43 @@ _rerank(subjects);
 ---
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-  <div
-    class="anime-rank-header mobile:flex-col sm:flex-wrap sm:flex items-center gap-2 mb-4 dark:text-gray-300 justify-end"
-  >
-    <label class="flex items-center gap-1 text-sm pb-2 sm:pb-0">
-      <input id="unrankedDisplayToggle" type="checkbox" class="accent-blue-600" />
-      <span>显示没有排名的作品</span>
-    </label>
+  <div class="anime-rank-header mb-4 dark:text-gray-400 flex flex-col items-end gap-2">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input id="unrankedDisplayToggle" type="checkbox" class="accent-blue-600" />
+        <span>无Rank</span>
+      </label>
+      <span class="text-gray-300 dark:text-gray-600">|</span>
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" class="media-type-cb accent-blue-600" data-value="tv" />
+        <span>TV</span>
+      </label>
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" class="media-type-cb accent-blue-600" data-value="ova" />
+        <span>OVA</span>
+      </label>
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" class="media-type-cb accent-blue-600" data-value="ona" />
+        <span>ONA</span>
+      </label>
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" class="media-type-cb accent-blue-600" data-value="movie" />
+        <span>Movie</span>
+      </label>
+      <span class="text-gray-300 dark:text-gray-600">|</span>
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" class="rating-cb accent-blue-600" data-value="r18" />
+        <span>NSFW</span>
+      </label>
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" class="rating-cb accent-blue-600" data-value="kids" />
+        <span>Kids</span>
+      </label>
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" class="rating-cb accent-blue-600" data-value="general" />
+        <span>General</span>
+      </label>
+    </div>
     <div class="flex flex-wrap items-center gap-2">
       <button
         class="sort-btn text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-1 cursor-pointer transition-colors duration-200"
@@ -138,6 +168,8 @@ _rerank(subjects);
           drop_rate={item.drop_rate}
           air_weekday={item.air_weekday}
           meta_tags={item.meta_tags}
+          media_type={item.media_type}
+          rating={item.rating}
           collection_threshold={collection_threshold}
           comment_threshold={comment_threshold}
           drop_rate_threshold={drop_rate_threshold}
@@ -167,11 +199,22 @@ _rerank(subjects);
 
     const unrankedDisplayToggle = document.getElementById("unrankedDisplayToggle");
     const headerButtons = document.querySelectorAll("[data-sort-key]");
+    const mediaTypeCbs = document.querySelectorAll(".media-type-cb");
+    const ratingCbs = document.querySelectorAll(".rating-cb");
+
+    const DEFAULT_MEDIA = new Set(["tv"]);
+    const DEFAULT_RATINGS = new Set(["general"]);
 
     const params = new URLSearchParams(location.search);
     let sortKey = params.get("sort") || "rank";
     let order = params.get("order") || "asc";
     let unrankedDisplay = params.get("unrankedDisplay") === "1";
+
+    const mtParam = params.get("mediaTypes");
+    let mediaTypes = mtParam ? new Set(mtParam.split(",")) : new Set(DEFAULT_MEDIA);
+
+    const rtParam = params.get("ratings");
+    let ratings = rtParam ? new Set(rtParam.split(",")) : new Set(DEFAULT_RATINGS);
 
     function sortFn(a, b) {
       const aVal = Number(a.dataset[sortKey]);
@@ -181,18 +224,30 @@ _rerank(subjects);
       return order === "asc" ? valA - valB : valB - valA;
     }
 
+    function setsEqual(a, b) {
+      if (a.size !== b.size) return false;
+      for (const v of a) if (!b.has(v)) return false;
+      return true;
+    }
+
     function apply() {
-      const filtered = unrankedDisplay
-        ? cards.slice()
-        : cards.filter((c) => {
-            const r = Number(c.dataset.rank);
-            return !Number.isNaN(r) && r < 999999 && r > 0;
-          });
+      const filtered = cards.filter((c) => {
+        if (!unrankedDisplay) {
+          const r = Number(c.dataset.rank);
+          if (Number.isNaN(r) || r >= 999999 || r <= 0) return false;
+        }
+        if (!mediaTypes.has(c.dataset.mediaType || "")) return false;
+        if (!ratings.has(c.dataset.rating || "")) return false;
+        return true;
+      });
       filtered.sort(sortFn);
       list.innerHTML = "";
       filtered.forEach((el) => list.appendChild(el));
 
       unrankedDisplayToggle.checked = unrankedDisplay;
+      mediaTypeCbs.forEach((cb) => { cb.checked = mediaTypes.has(cb.dataset.value); });
+      ratingCbs.forEach((cb) => { cb.checked = ratings.has(cb.dataset.value); });
+
       headerButtons.forEach((btn) => {
         const active = btn.dataset.sortKey === sortKey;
         btn.classList.toggle("bg-gray-200", active);
@@ -209,6 +264,8 @@ _rerank(subjects);
       if (sortKey !== "rank") newParams.set("sort", sortKey);
       if (order !== "asc") newParams.set("order", order);
       if (unrankedDisplay) newParams.set("unrankedDisplay", "1");
+      if (!setsEqual(mediaTypes, DEFAULT_MEDIA)) newParams.set("mediaTypes", [...mediaTypes].join(","));
+      if (!setsEqual(ratings, DEFAULT_RATINGS)) newParams.set("ratings", [...ratings].join(","));
       const search = newParams.toString();
       history.replaceState(null, "", search ? `?${search}` : location.pathname);
     }
@@ -216,6 +273,22 @@ _rerank(subjects);
     unrankedDisplayToggle.addEventListener("change", (e) => {
       unrankedDisplay = e.target.checked;
       apply();
+    });
+
+    mediaTypeCbs.forEach((cb) => {
+      cb.addEventListener("change", () => {
+        if (cb.checked) mediaTypes.add(cb.dataset.value);
+        else mediaTypes.delete(cb.dataset.value);
+        apply();
+      });
+    });
+
+    ratingCbs.forEach((cb) => {
+      cb.addEventListener("change", () => {
+        if (cb.checked) ratings.add(cb.dataset.value);
+        else ratings.delete(cb.dataset.value);
+        apply();
+      });
     });
 
     headerButtons.forEach((btn) => {
