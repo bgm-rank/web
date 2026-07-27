@@ -20,14 +20,24 @@ if (!result.success) {
 const failedCount = result.data.filter((s) => s.rank === null).length;
 const subjects = result.data.filter((s) => s.rank !== null) as (typeof result.data[number] & { rank: number })[];
 
-function formatUpdatedAt(updated_at: string) {
-  const date = new Date(updated_at);
-  return date.toLocaleDateString("zh-CN", {
+// 后端的 updated_at 是不带时区后缀的 ISO 8601，语义为 UTC（见 ../api/docs/api.md）。
+// 不补 Z 的话 new Date() 会按 JS 规范当作本地时间解析，构建机时区不同结果就不同。
+function toUtcIso(raw: string): string {
+  return /([Zz]|[+-]\d{2}:?\d{2})$/.test(raw) ? raw : `${raw}Z`;
+}
+
+const updatedAtIso = toUtcIso(updated_at);
+
+// 构建时只渲染 UTC 兜底文本（显式指定 timeZone，避免依赖构建机时区），
+// 真正按访问者时区显示由下方脚本完成。
+function formatUpdatedAt(iso: string) {
+  return new Date(iso).toLocaleString("zh-CN", {
     year: "numeric",
     month: "long",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "UTC",
   });
 }
 
@@ -182,8 +192,27 @@ _rerank(subjects);
     class="text-gray-600 dark:text-gray-400 text-xs mt-4 mb-1 flex items-center justify-center gap-1"
   >
     <Clock class="text-xs" />
-    <span>数据更新时间：{formatUpdatedAt(updated_at)}</span>
+    <span>数据更新时间：<time datetime={updatedAtIso} data-localize-time
+        >{formatUpdatedAt(updatedAtIso)} (UTC)</time
+      ></span
+    >
   </div>
+
+  <!-- Client script required: 时间戳要按访问者所在时区显示，而时区只有浏览器知道。
+       SSG 在构建时无法预知访问者时区，只能渲染 UTC 兜底文本，由这里改写成本地时间。 -->
+  <script is:inline>
+    document.querySelectorAll("time[data-localize-time]").forEach((el) => {
+      const date = new Date(el.getAttribute("datetime"));
+      if (Number.isNaN(date.getTime())) return;
+      el.textContent = date.toLocaleString("zh-CN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    });
+  </script>
   {
     failedCount > 0 && (
       <div class="text-xs mt-2 mb-1 flex items-center justify-center gap-1 text-yellow-600 dark:text-yellow-400">
